@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
-from services.logger import setup_logger
+from app.services.logger import setup_logger
 
 logger = setup_logger(__name__)
 
