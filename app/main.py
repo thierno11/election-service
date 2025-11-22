@@ -84,7 +84,7 @@ ALLOWED_ORIGINS = [
 
 
 
-from middleware.logging_middleware import RequestLoggingMiddleware
+from app.middleware.logging_middleware import RequestLoggingMiddleware
 app.add_middleware(RequestLoggingMiddleware)
 
 
