@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
-from model.region_model import Region
-from model.departement_model import Departement
+from app.model.region_model import Region
+from app.model.departement_model import Departement
 
 class TestDepartementModel:
     def test_create_departement(self, test_db_session):

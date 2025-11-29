@@ -1,6 +1,6 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
-from model.region_model import Region
+from app.model.region_model import Region
 
 class TestRegionModel:
     def test_create_region(self, test_db_session):

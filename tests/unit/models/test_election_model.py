@@ -2,7 +2,7 @@
 
 import pytest
 from sqlalchemy.exc import IntegrityError
-from model.election_model import Election
+from app.model.election_model import Election
 
 
 class TestElectionModel:

@@ -1,10 +1,10 @@
 import pytest
 from fastapi import HTTPException, status
-from services.departements_service import create_departement, get_all_departement, update_departement, delete_departement
-from model.region_model import Region
-from model.departement_model import Departement
-from model.commune_model import Commune
-from schema.departement_schema import DepartementSchema
+from app.services.departements_service import create_departement, get_all_departement, update_departement, delete_departement
+from app.model.region_model import Region
+from app.model.departement_model import Departement
+from app.model.commune_model import Commune
+from app.schema.departement_schema import DepartementSchema
 
 class TestDepartementsService:
 

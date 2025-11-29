@@ -1,9 +1,9 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
-from model.region_model import Region
-from model.departement_model import Departement
-from model.commune_model import Commune
-from model.bureau_vote import BureauVote
+from app.model.region_model import Region
+from app.model.departement_model import Departement
+from app.model.commune_model import Commune
+from app.model.bureau_vote import BureauVote
 
 class TestBureauVoteModel:
     def test_create_bureau_vote(self, test_db_session):

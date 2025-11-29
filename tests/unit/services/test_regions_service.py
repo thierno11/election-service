@@ -2,10 +2,10 @@ import pytest
 from unittest.mock import Mock
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from services.regions_services import create_region, get_all_region, update_region, delete_region
-from model.region_model import Region
-from model.departement_model import Departement
-from schema.region_schema import RegionSchema
+from app.services.regions_services import create_region, get_all_region, update_region, delete_region
+from app.model.region_model import Region
+from app.model.departement_model import Departement
+from app.schema.region_schema import RegionSchema
 
 class TestRegionsService:
 

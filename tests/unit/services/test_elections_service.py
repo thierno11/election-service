@@ -6,9 +6,9 @@ from unittest.mock import Mock, MagicMock
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from fastapi import HTTPException
 
-from model.election_model import Election
-from schema.election_schema import ElectionSchema, TypeElection, StatutElection
-from services.elections_service import (
+from app.model.election_model import Election
+from app.schema.election_schema import ElectionSchema, TypeElection, StatutElection
+from app.services.elections_service import (
     create_election,
     get_all_elections,
     get_election_by_id,
