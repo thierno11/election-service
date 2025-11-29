@@ -1,0 +1,12 @@
+name: elections-service
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu:latest
+    steps:
+      - name: chargement de repos
+        uses: actions/checkout@v6
