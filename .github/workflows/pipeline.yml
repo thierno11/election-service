@@ -53,3 +53,18 @@ jobs:
           port: 22
           source: "mychart/*"
           target: "/home/ubuntu/mychart"
+      - name: Execute remote SSH commands using SSH key
+        uses: appleboy/ssh-action@v1
+        with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          helm upgrade first --install myapp /home/ubuntu/mychart \ --namespace election-service \
+          --set image.repository=${{ steps.login-ecr-public.outputs.registry }}/${{ secrets.REPONAME }} \
+          --set image.tag=${{ github.sha }} \
+          --set env.dbHost=${{ secrets.DB_HOST }} \
+          --set env.dbPort=${{ secrets.DB_PORT }} \
+          --set env.dbUser=${{ secrets.DB_USER }} \
+          --set env.dbPassword=${{ secrets.DB_PASSWORD }} \
+          --set env.dbName=${{ secrets.DB_NAME }}
