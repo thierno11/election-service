@@ -159,7 +159,7 @@ async def root() -> Dict[str, Any]:
         "health_check": "/health"
     }
 
-
+ # bonjour 
 @app.get(
     "/health",
     summary="Vérification de l'état de l'API",
