@@ -59,8 +59,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            helm upgrade first --install /home/ubuntu/mychart \ 
+          script: helm upgrade --install first /home/ubuntu/mychart \
             --namespace election-service \
             --set image.repository=${{ steps.login-ecr-public.outputs.registry }}/${{ secrets.REPONAME }} \
             --set image.tag=${{ github.sha }} \
