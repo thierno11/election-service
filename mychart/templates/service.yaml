@@ -10,7 +10,7 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    - port: {{ .Values.service.port }} # même port que http
+    - port: 8001 # même port que http
       targetPort: http # même targetPort
       protocol: TCP
       name: metrics
