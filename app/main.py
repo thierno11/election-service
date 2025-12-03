@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy.exc import SQLAlchemyError
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.services.logger import setup_logger
 
@@ -253,3 +254,5 @@ async def shutdown_event():
     """Événement exécuté à l'arrêt de l'application."""
     logger.info("🛑 Arrêt de l'API Système Électoral")
 
+# Initialize Prometheus instrumentation
+Instrumentator().instrument(app).expose(app)
