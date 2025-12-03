@@ -10,8 +10,8 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    - name: metrics
-      port: {{ .Values.service.port }} # même port que http
+    - port: {{ .Values.service.port }} # même port que http
       targetPort: http # même targetPort
       protocol: TCP
+      name: metrics
   selector: {{- include "mychart.selectorLabels" . | nindent 4 }}
