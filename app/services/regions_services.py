@@ -305,27 +305,5 @@ def get_departements_for_region(id_region,db:Session):
     return departements
 
 
-def get_region_by_nom_region(nom_region: str, db: Session) -> RegionReponse:
-   
-    # Récupérer toutes les régions
-    region = db.query(Region).filter(Region.nom_region == nom_region.upper()).first()
-
-    if not region:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Région contenant ou correspondant à '{nom_region}' introuvable"
-        )
-
-    logger.info(f"Région trouvée: {region.nom_region}, Recherche: {nom_region}")
-
-    result = RegionReponse(
-        id_region=region.id_region,
-        nom_region=region.nom_region,
-        nombre_departement=len(region.departements),
-        departements=region.departements
-    )
-    return result
-
-
 # Alias pour compatibilité
 get_all_region = get_all_regions

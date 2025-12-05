@@ -14,12 +14,8 @@ from app.schema.inscription_election_schema import (
     InscriptionElectionBulkSchema
 )
 from app.services.inscription_election_service import (
-    create_inscription_election,
     create_inscriptions_bulk,
     get_all_inscriptions,
-    get_all_inscriptions_avec_details,
-    get_inscriptions_by_election,
-    get_inscriptions_by_candidat,
     delete_inscription_election
 )
 
@@ -36,36 +32,6 @@ inscription_election_router = APIRouter(
     }
 )
 
-
-@inscription_election_router.post(
-    "/",
-    response_model=InscriptionElectionReponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Créer une nouvelle inscription d'élection",
-    description="Inscrit un candidat à une élection pour une date donnée."
-)
-def creer_inscription(
-    inscription: InscriptionElectionSchema,
-    db: Session = Depends(get_database)
-) -> InscriptionElectionReponse:
-    """
-    Crée une nouvelle inscription d'élection.
-
-    - **id_election**: Identifiant de l'élection
-    - **nom_candidat**: Nom du candidat
-    - **date_election**: Date de l'élection
-
-    Returns:
-        InscriptionElectionReponse: L'inscription créée
-    """
-    created_inscription = create_inscription_election(inscription, db)
-
-    return InscriptionElectionReponse(
-        id_election=created_inscription.id_election,
-        id_candidat=created_inscription.id_candidat,
-        date_election=created_inscription.date_election,
-        created_at=created_inscription.created_at
-    )
 
 
 @inscription_election_router.post(
@@ -148,61 +114,6 @@ def recuperer_inscriptions(
     summary="Lister toutes les inscriptions avec détails",
     description="Récupère la liste de toutes les inscriptions avec les noms des candidats et types d'élections."
 )
-def recuperer_inscriptions_avec_details(
-    db: Session = Depends(get_database)
-) -> List[InscriptionElectionAvecDetails]:
-    """
-    Récupère toutes les inscriptions d'élection avec les détails.
-
-    Returns:
-        List[InscriptionElectionAvecDetails]: Liste des inscriptions avec noms
-    """
-    return get_all_inscriptions_avec_details(db)
-
-
-@inscription_election_router.get(
-    "/election/{id_election}/{date_election}",
-    response_model=List[InscriptionElectionAvecDetails],
-    summary="Inscriptions pour une élection",
-    description="Récupère toutes les inscriptions pour une élection et une date données."
-)
-def recuperer_inscriptions_par_election(
-    id_election: int,
-    date_election: date,
-    db: Session = Depends(get_database)
-) -> List[InscriptionElectionAvecDetails]:
-    """
-    Récupère toutes les inscriptions pour une élection donnée.
-
-    - **id_election**: Identifiant de l'élection
-    - **date_election**: Date de l'élection (format: YYYY-MM-DD)
-
-    Returns:
-        List[InscriptionElectionAvecDetails]: Liste des candidats inscrits à cette élection
-    """
-    return get_inscriptions_by_election(id_election, date_election, db)
-
-
-@inscription_election_router.get(
-    "/candidat/{nom_candidat}",
-    response_model=List[InscriptionElectionAvecDetails],
-    summary="Inscriptions d'un candidat",
-    description="Récupère toutes les inscriptions d'un candidat donné."
-)
-def recuperer_inscriptions_par_candidat(
-    nom_candidat: str,
-    db: Session = Depends(get_database)
-) -> List[InscriptionElectionAvecDetails]:
-    """
-    Récupère toutes les inscriptions d'un candidat donné.
-
-    - **nom_candidat**: Nom du candidat
-
-    Returns:
-        List[InscriptionElectionAvecDetails]: Liste des élections auxquelles ce candidat est inscrit
-    """
-    return get_inscriptions_by_candidat(nom_candidat, db)
-
 
 @inscription_election_router.delete(
     "/{id_election}/{nom_candidat}/{date_election}",

@@ -1,9 +1,11 @@
 """Contrôleur pour la gestion des régions."""
 
-from typing import Dict, List
-from fastapi import APIRouter, Depends, status,Query
+from typing import Dict
+from fastapi import APIRouter, Depends, status,Query,HTTPException
 from sqlalchemy.orm import Session
-
+# Compter les départements
+from sqlalchemy import func
+from app.model.departement_model import Departement
 from app.db.connexion import get_database
 from app.schema.region_schema import RegionSchema, RegionReponse
 from app.services.regions_services import (
@@ -12,7 +14,8 @@ from app.services.regions_services import (
     get_all_regions,
     update_region,
     get_all_regions_witout_pagination,
-    get_departements_for_region
+    get_departements_for_region,
+    get_region_by_id
     
 )
 
@@ -99,8 +102,6 @@ def recuperer_region_par_id(
     Returns:
         RegionReponse: Les détails de la région avec le nombre de départements
     """
-    from services.regions_services import get_region_by_id
-    from fastapi import HTTPException
 
     region = get_region_by_id(region_id, db)
     if not region:
@@ -109,9 +110,7 @@ def recuperer_region_par_id(
             detail=f"Région avec l'ID {region_id} introuvable"
         )
 
-    # Compter les départements
-    from sqlalchemy import func
-    from model.departement_model import Departement
+
 
     nombre_departements = db.query(func.count(Departement.id_departement)).filter(
         Departement.id_region == region_id

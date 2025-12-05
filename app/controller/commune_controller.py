@@ -48,7 +48,7 @@ def supprimer_commune(id: int, db: Session = Depends(get_database)):
     return delete_commune(id,db)
 
 @commune_router.get("/departement/{id_departement}",)
-def supprimer_commune(id_departement: int, db: Session = Depends(get_database)):
+def get_communes_by_departement(id_departement: int, db: Session = Depends(get_database)):
     return get_commune_by_departement(id_departement,db)
 
 

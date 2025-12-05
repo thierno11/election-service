@@ -89,34 +89,3 @@ def supprimer_centre(id_centre: int, db: Session = Depends(get_database)):
     return delete_centre(id_centre, db)
 
 
-
-@centre_vote_router.get("/commune/{id_commune}", status_code=status.HTTP_200_OK)
-def recuperer_centres_par_commune(id_commune: int, db: Session = Depends(get_database)):
-    """
-    Récupère tous les centres de vote d'une commune spécifique.
-
-    - **id_commune**: Identifiant unique de la commune
-
-    Returns:
-        Liste des centres avec leurs informations:
-        - id_centre: ID du centre
-        - nom_centre: Nom du centre
-        - nombre_bureaux: Nombre de bureaux dans ce centre
-
-    Example de réponse:
-    ```json
-    [
-        {
-            "id_centre": 25,
-            "nom_centre": "ÉCOLE PRIMAIRE CENTRALE",
-            "nombre_bureaux": 5
-        },
-        {
-            "id_centre": 26,
-            "nom_centre": "LYCÉE KENNEDY",
-            "nombre_bureaux": 8
-        }
-    ]
-    ```
-    """
-    return get_centres_by_commune(id_commune, db)
