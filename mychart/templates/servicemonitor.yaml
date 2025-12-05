@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "mychart.fullname" . }}-monitor-election-Service
+  name: {{ include "mychart.fullname" . }}-monitor-election-service
   namespace: monitoring
   labels:
     release: monitoring   # DOIT correspondre à ton kube-prometheus-stack
