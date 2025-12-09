@@ -1,9 +1,17 @@
 from pydantic import BaseModel, field_validator
 from typing import Optional, List, TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from app.schema.bureau_vote_schema import BureauVoteReponse
 
+
+class BureauVoteReponse(BaseModel):
+    id_bureau: int
+    numero_bureau: int
+    implantation: str
+    id_centre: int
+    centre_vote: Optional["CentreVoteReponse1"] = None
+
+    class Config:
+        from_attributes = True
 
 class CentreVotesSchema(BaseModel):
     """Schéma pour créer/modifier un centre de vote."""
@@ -40,13 +48,13 @@ class CentreVoteReponse1(BaseModel):
         from_attributes = True
 
 
-# Résolution des références forward après toutes les définitions
-def _resolve_forward_refs():
-    from schema.bureau_vote_schema import BureauVoteReponse
-    CentreVotesReponse.model_rebuild()
+# # Résolution des références forward après toutes les définitions
+# def _resolve_forward_refs():
+#     from schema.bureau_vote_schema import BureauVoteReponse
+#     CentreVotesReponse.model_rebuild()
 
-# Appel différé pour éviter les imports circulaires
-try:
-    _resolve_forward_refs()
-except ImportError:
-    pass
+# # Appel différé pour éviter les imports circulaires
+# try:
+#     _resolve_forward_refs()
+# except ImportError:
+#     pass

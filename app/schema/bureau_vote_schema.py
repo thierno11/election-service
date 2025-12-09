@@ -1,8 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from app.schema.centre_votes_schema import CentreVoteReponse1
+from app.schema.centre_votes_schema import CentreVoteReponse1
 
 
 # Schema pour créer ou recevoir un bureau de vote
@@ -26,13 +25,13 @@ class BureauVoteReponse(BaseModel):
         from_attributes = True
 
 
-# Résolution des références forward après toutes les définitions
-def _resolve_forward_refs():
-    from schema.centre_votes_schema import CentreVoteReponse1
-    BureauVoteReponse.model_rebuild()
+# # Résolution des références forward après toutes les définitions
+# def _resolve_forward_refs():
+#     from schema.centre_votes_schema import CentreVoteReponse1
+#     BureauVoteReponse.model_rebuild()
 
-# Appel différé pour éviter les imports circulaires
-try:
-    _resolve_forward_refs()
-except ImportError:
-    pass
+# # Appel différé pour éviter les imports circulaires
+# try:
+#     _resolve_forward_refs()
+# except ImportError:
+#     pass

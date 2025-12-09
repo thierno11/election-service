@@ -5,8 +5,22 @@ on:
     branches:
       - main
 jobs:
+  # sonarqube:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         # Disabling shallow clones is recommended for improving the relevancy of reporting
+  #         fetch-depth: 0
+  #     - name: SonarQube Scan
+  #       uses: SonarSource/sonarqube-scan-action@v6 # Ex: v4.1.0 or sha1, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
+  #       env:
+  #         SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL}}
+
   build:
     runs-on: ubuntu-latest
+    needs: sonarqube
     steps:
       - name: chargement de repos
         uses: actions/checkout@v6
