@@ -43,38 +43,79 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.REPONAME }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.REPONAME }}:v${{ github.run_number }}
 
-  deploy:
+deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: checkout
+      - name: chargement de repos
         uses: actions/checkout@v6
-      - name: Copy changed files to server
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION}}
+      - name: copy mychart vers ec2
         uses: appleboy/scp-action@v1
         with:
-          host: ${{ secrets.HOST_LOCAL }}
-          username: ${{ secrets.USERNAME_LOCAL }}
-          key: ${{ secrets.KEY_LOCAL }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           source: "mychart/*"
-          target: "/home/thierno/election"
-          overwrite: true
+          target: "/home/ubuntu/mychart"
       - name: Execute remote SSH commands using SSH key
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.HOST_LOCAL }}
-          username: ${{ secrets.USERNAME_LOCAL }}
-          key: ${{ secrets.KEY_LOCAL }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/thierno/election
+            cd /home/ubuntu/mychart
             helm upgrade first --install mychart \
               --namespace election-service \
               --set image.tag=v${{ github.run_number }} \
-              --set env.dbHost=${{ secrets.HOST_LOCAL }} \
+              --set env.dbHost=${{ secrets.DB_HOST }} \
               --set env.dbPort=${{ secrets.DB_PORT }} \
               --set env.dbUser=${{ secrets.DB_USER }} \
               --set env.dbPassword=${{ secrets.DB_PASSWORD }} \
               --set env.dbName=${{ secrets.DB_NAME }}
+
+
+
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - name: checkout
+  #       uses: actions/checkout@v6
+  #     - name: Copy changed files to server
+  #       uses: appleboy/scp-action@v1
+  #       with:
+  #         host: ${{ secrets.HOST_LOCAL }}
+  #         username: ${{ secrets.USERNAME_LOCAL }}
+  #         key: ${{ secrets.KEY_LOCAL }}
+  #         port: 22
+  #         source: "mychart/*"
+  #         target: "/home/thierno/election"
+  #         overwrite: true
+  #     - name: Execute remote SSH commands using SSH key
+  #       uses: appleboy/ssh-action@v1
+  #       with:
+  #         host: ${{ secrets.HOST_LOCAL }}
+  #         username: ${{ secrets.USERNAME_LOCAL }}
+  #         key: ${{ secrets.KEY_LOCAL }}
+  #         script: |
+  #           cd /home/thierno/election
+  #           helm upgrade first --install mychart \
+  #             --namespace election-service \
+  #             --set image.tag=v${{ github.run_number }} \
+  #             --set env.dbHost=${{ secrets.HOST_LOCAL }} \
+  #             --set env.dbPort=${{ secrets.DB_PORT }} \
+  #             --set env.dbUser=${{ secrets.DB_USER }} \
+  #             --set env.dbPassword=${{ secrets.DB_PASSWORD }} \
+  #             --set env.dbName=${{ secrets.DB_NAME }}
 
   #     - name: Configure AWS Credentials
   #       uses: aws-actions/configure-aws-credentials@v5.1.1
@@ -95,44 +136,4 @@ jobs:
   #         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
   #         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - name: chargement de repos
-  #       uses: actions/checkout@v6
-  #     - name: Configure AWS Credentials
-  #       uses: aws-actions/configure-aws-credentials@v5.1.1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ secrets.AWS_REGION}}
-  #     - name: Login to Amazon ECR Public
-  #       id: login-ecr-public
-  #       uses: aws-actions/amazon-ecr-login@v2
-  #     - name: copy mychart vers ec2
-  #       uses: appleboy/scp-action@v1
-  #       with:
-  #         host: ${{ secrets.EC2_HOST }}
-  #         username: ${{ secrets.EC2_USER }}
-  #         key: ${{ secrets.EC2_SSH_KEY }}
-  #         port: 22
-  #         source: "mychart/*"
-  #         target: "/home/ubuntu/mychart"
-  #     - name: Execute remote SSH commands using SSH key
-  #       uses: appleboy/ssh-action@v1
-  #       with:
-  #         host: ${{ secrets.EC2_HOST }}
-  #         username: ${{ secrets.EC2_USER }}
-  #         key: ${{ secrets.EC2_SSH_KEY }}
-  #         script: |
-  #           cd /home/ubuntu/mychart
-  #           helm upgrade first --install mychart \
-  #             --namespace election-service \
-  #             --set image.repository=${{ steps.login-ecr-public.outputs.registry }}/${{ secrets.REPONAME }} \
-  #             --set image.tag=${{ github.sha }} \
-  #             --set env.dbHost=${{ secrets.DB_HOST }} \
-  #             --set env.dbPort=${{ secrets.DB_PORT }} \
-  #             --set env.dbUser=${{ secrets.DB_USER }} \
-  #             --set env.dbPassword=${{ secrets.DB_PASSWORD }} \
-  #             --set env.dbName=${{ secrets.DB_NAME }}
+  

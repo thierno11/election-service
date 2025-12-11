@@ -14,7 +14,18 @@ services:
       - pg_data:/var/lib/postgresql/data
     networks:
       - elections-net
-
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: maladydiallo2@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80" # tu accéderas à pgAdmin via http://localhost:8080
+    depends_on:
+      - postgres
+    networks:
+      - elections-net
   sonarqube:
     container_name: sonarqube1
     image: sonarqube

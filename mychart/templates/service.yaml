@@ -10,8 +10,4 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    - port: 8001 # même port que http
-      targetPort: http # même targetPort
-      protocol: TCP
-      name: metrics
   selector: {{- include "mychart.selectorLabels" . | nindent 4 }}
