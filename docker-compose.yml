@@ -160,6 +160,8 @@ services:
       - nifi_conf:/opt/nifi/nifi-current/conf
       - nifi_state:/opt/nifi/nifi-current/state
       - ./nifidata:/opt/nifi/nifi-current/nifi-data
+      - ./nifidata/postgresql-42.7.7.jar:/opt/nifi/nifi-current/lib/postgresql-42.7.7.jar
+
     networks:
       - elections-net
     depends_on:
