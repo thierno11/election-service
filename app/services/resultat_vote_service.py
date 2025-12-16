@@ -2,6 +2,8 @@
 
 import logging
 from typing import  List
+from datetime import date, datetime, time
+
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy import and_, func
@@ -12,6 +14,7 @@ from app.model.resultat_model import ResultatVote
 from app.model.election_model import Election
 from app.model.candidat_model import Candidat
 from app.model.centres_votes_model import CentreVote
+from app.model.inscription_election_model import InscriptionElection
 from app.schema.resultat_vote_schema import (
     ResultatVoteBulkSchema,
 )
@@ -39,14 +42,42 @@ def create_resultats_bulk(resultats_bulk: ResultatVoteBulkSchema, db: Session) -
         election = db.query(Election).filter(
             Election.type_election == resultats_bulk.type_election
         ).first()
-
         if not election:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Élection de type '{resultats_bulk.type_election}' introuvable"
             )
+        # Vérifier l'inscription de l'élection avec la bonne date
+        inscription_election = db.query(InscriptionElection).filter(
+            InscriptionElection.id_election == election.id_election,
+            InscriptionElection.date_election == resultats_bulk.date_election
+        ).first()
+
+        if not inscription_election:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="La date fournie ne correspond pas à la date officielle de cette élection"
+            )
+        # Vérifier que la date est aujourd'hui
+        today = date.today()
+
+        if resultats_bulk.date_election != today:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="L'enregistrement des résultats n'est autorisé que le jour de l'élection"
+            )
+        now = datetime.now().time()
+
+        start_time = time(8, 0)   # 08:00
+        end_time = time(20, 0)    # 20:00
+
+        if not (start_time <= now <= end_time):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="L'enregistrement des résultats est autorisé uniquement entre 08h00 et 20h00"
+            )
+
         commune = get_communes_by_nom_commune(resultats_bulk.commune,db)
-        print(commune)
         if not commune:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

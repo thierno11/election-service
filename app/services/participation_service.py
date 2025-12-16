@@ -9,6 +9,7 @@ from sqlalchemy import and_, func, text
 from fastapi import HTTPException, status
 from app.services.commune_service import get_communes_by_nom_commune
 from app.services.centre_votes_service import get_centre_by_nom_centre
+from datetime import date, datetime, time
 
 from app.model.participation_model import Participation
 from app.model.election_model import Election
@@ -17,11 +18,13 @@ from app.model.centres_votes_model import CentreVote
 from app.model.commune_model import Commune
 from app.model.departement_model import Departement
 from app.model.region_model import Region
+from app.model.inscription_election_model import InscriptionElection
 from app.schema.participation_schema import (
     ParticipationSchema,
     ParticipationReponse,
     StatistiquesParticipation,
 )
+from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +54,41 @@ def create_participation(participation: ParticipationSchema, db: Session) -> Par
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Élection de type '{participation.type_election}' introuvable"
             )
+        
+        # Vérifier que l'élection est bien inscrite avec cette date
+        inscription_election = db.query(InscriptionElection).filter(
+            InscriptionElection.id_election == election.id_election,
+            InscriptionElection.date_election == participation.date_election
+        ).first()
+
+        if not inscription_election:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="La date fournie ne correspond pas à la date officielle de cette élection"
+            )
+
+        # Vérifier que la date est aujourd'hui
+        today = date.today()
+        if participation.date_election != today:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="L'enregistrement de la participation n'est autorisé que le jour de l'élection"
+            )
+
+        # Vérifier la fenêtre horaire (08h00 - 20h00, heure Sénégal)
+        now = datetime.now(ZoneInfo("Africa/Dakar")).time()
+
+        start_time = time(8, 0)
+        end_time = time(20, 0)
+
+        if not (start_time <= now <= end_time):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="L'enregistrement de la participation est autorisé uniquement entre 08h00 et 20h00"
+            )
+
+
         commune = get_communes_by_nom_commune(participation.commune,db)
-        print(commune)
         if not commune:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -63,7 +99,6 @@ def create_participation(participation: ParticipationSchema, db: Session) -> Par
         centre_search = participation.centre.upper()
         centre = next((x for x in centre_communes if centre_search in x.nom_centre.upper()), None)
 
-        print(centre)
         if not centre:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

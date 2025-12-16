@@ -264,3 +264,40 @@ def get_dates_election(election_id: int, db: Session) -> List[date]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Erreur lors de la récupération des dates de l'élection"
         )
+    
+
+
+def get_dates(db: Session) -> List[date]:
+    """
+    Récupère les dates distinctes d'une élection spécifique.
+
+    Args:
+        election_id: ID de l'élection
+        db: Session de base de données
+
+    Returns:
+        List[date]: Liste des dates distinctes de l'élection
+
+    Raises:
+        HTTPException: Si l'élection n'existe pas ou en cas d'erreur
+    """
+    try:
+        # Récupérer les dates distinctes de cette élection depuis la table InscriptionElection
+        dates = (
+            db.query(distinct(InscriptionElection.date_election))
+            .order_by(InscriptionElection.date_election)
+            .all()
+        )
+
+        # Extraire les dates de la liste de tuples
+        dates_list = [d[0] for d in dates]
+        return dates_list
+
+    except HTTPException:
+        raise
+    except SQLAlchemyError as e:
+        logger.error(f"Erreur lors de la récupération des dates pour les élections: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la récupération des dates de l'élection"
+        )

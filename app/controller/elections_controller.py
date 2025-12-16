@@ -14,7 +14,8 @@ from app.services.elections_service import (
     get_all_elections,
     update_election,
     get_election_by_id,
-    get_dates_election
+    get_dates_election,
+    get_dates
 )
 
 logger = logging.getLogger(__name__)
@@ -55,6 +56,35 @@ def creer_election(
         id_election=created_election.id_election,
         type_election=created_election.type_election
     )
+
+@elections_router.get(
+    "/dates",
+    response_model=List[date],
+    summary="Récupérer les dates d'une élection",
+    description="Récupère toutes les dates distinctes pour une élection spécifique."
+)
+
+def recuperer_dates(
+    db: Session = Depends(get_database)
+) -> List[date]:
+    """
+    Récupère les dates distinctes de une élection spécifique.
+
+    - **election_id**: L'identifiant unique de l'élection
+
+    Returns:
+        List[date]: Liste des dates distinctes pour cette élection, triées par ordre chronologique
+
+    Example de réponse:
+    ```json
+    [
+        "2024-02-25",
+        "2024-03-15",
+        "2024-04-10"
+    ]
+    ```
+    """
+    return get_dates(db)
 
 
 @elections_router.get(
@@ -155,6 +185,8 @@ def supprimer_election(
     return delete_election(election_id, db)
 
 
+
+
 @elections_router.get(
     "/{election_id}/dates",
     response_model=List[date],
@@ -183,3 +215,9 @@ def recuperer_dates_election(
     ```
     """
     return get_dates_election(election_id, db)
+
+
+
+
+
+
